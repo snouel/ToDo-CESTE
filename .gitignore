@@ -1,0 +1,13 @@
+# Entornos virtuales
+venv/
+.venv/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Archivos del sistema operativo/IDE
+.DS_Store
+.vscode/
