@@ -1,10 +1,7 @@
 pipeline {
-    // ************************************************
-    // AGENTE: Usamos una etiqueta para forzar el agente de Windows
-    // ************************************************
-    agent { label 'windows-host' } // <--- ¡CORREGIDO Y OPTIMIZADO!
 
-    // ************************************************
+    agent any
+     // <--- 
     // PARÁMETROS DE EJECUCIÓN
     // ************************************************
     parameters {
