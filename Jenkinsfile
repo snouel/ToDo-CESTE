@@ -109,7 +109,7 @@ pipeline {
 
                     withCredentials([usernamePassword(
                         credentialsId: DOCKERHUB_CREDENTIALS_ID,
-                        passwordVariable: 'DOCKER_TOKEN',   
+                        passwordVariable: 'DOCKER_TOKEN', 
                         usernameVariable: 'DOCKER_USERNAME' 
                     )]) {
                         
