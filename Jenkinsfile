@@ -46,18 +46,20 @@ pipeline {
 
         // ETAPA 3: ANÁLISIS DE CÓDIGO (SONARQUBE)
         stage ('SonarQube Analysis') {
+            // 1. Definimos las variables de entorno AQUÍ, no dentro de steps.
+            environment {
+                // NOTA: En Docker para Windows, usa 'host.docker.internal' en lugar de 'localhost'
+                // para que el contenedor pueda ver tu servidor SonarQube local.
+                SONAR_HOST_URL = 'http://host.docker.internal:9000'
+            }
+            
             steps {
-                withCredentials([string(credentialsId: SONAR_AUTH_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
-                    withSonarQubeEnv('SonarQube-Server') { 
-                        bat  """
-                            sonnar-scanner ^
-                                -Dsonar.projectKey=todo-ceste ^
-                                -Dsonar.sources=. ^
-                                -Dsonar.host.url=http://localhost:9000
-                                -Dsonar.login=%SONAR_TOKEN% ^
-                                -Dsonar.qualitygate.wait=true
-                        """
-                    }
+                // 2. Cargamos el Token (Asegúrate que el ID sea correcto)
+                withCredentials([string(credentialsId: 'sonar-auth-token-id', variable: 'SONAR_TOKEN')]) {
+                    
+                    // 3. Ejecutamos Docker en UNA SOLA LÍNEA.
+                    // Es la forma más segura para evitar errores de sintaxis en Windows CMD.
+                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
                 }
             }
         }
