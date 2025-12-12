@@ -51,7 +51,7 @@ pipeline {
             }
             
             steps {
-                withCredentials([string(credentialsId: 'sonar-auth-token-id', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: SONAR_AUTH_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     
                     // AGREGADO: -Dsonar.exclusions=syntax_check.py,tasks.py
                     // Esto evita que SonarQube te penalice por no tener tests en estos scripts.
