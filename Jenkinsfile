@@ -35,8 +35,8 @@ pipeline {
                 bat 'python -m pip install -r requirements.txt' 
                 
                 // 2. NUEVO: VALIDACIÓN NATIVA DE SINTAXIS (SIN FLAKE8)
-                        // Ejecuta el script que usa py_compile para revisar todos los archivos.
-                        bat 'python syntax_check.py'
+                // Ejecuta el script que usa py_compile para revisar todos los archivos.
+                bat 'python syntax_check.py'
 
                 // 3. Ejecuta Pytest como un módulo de Python
                 // Esto le dice a Python que ejecute el módulo 'pytest'
