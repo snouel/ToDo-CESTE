@@ -2,8 +2,8 @@
 FROM python:3.11-slim-buster
 
 # Establecer variables de entorno
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Crear y establecer el directorio de trabajo
 WORKDIR /app
