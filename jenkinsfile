@@ -79,22 +79,26 @@ pipeline {
          // ETAPA 5: ANÁLISIS DE VULNERABILIDADES (TRIVY)
         stage('Image Security Scan (Trivy)') {
                 when { expression { return params.PARAM_BUILD_IMAGE } } // Solo si se construyó la imagen
+                // ... dentro de la etapa 'Image Security Scan (Trivy)'
+
                 steps {
                     script {
                         def dockerImageTag = params.PARAM_DOCKER_VERSION
                         def fullImageName = "${DOCKERHUB_REPO}:${dockerImageTag}"
                         
-                        // Ejecuta Trivy, escaneando la imagen construida (comando 'image')
-                        bat "docker run --rm ^
-                                -v //var/run/docker.sock:/var/run/docker.sock ^
-                                aquasec/trivy:latest image ^
-                                --severity CRITICAL,HIGH ^
-                                --exit-code 1 ^
-                                --ignore-unfixed %fullImageName%"
-                    
+                        // Comando CORREGIDO: Uso de comillas triples (""") y eliminación del ^
+                        bat """
+                            docker run --rm \\
+                                -v //var/run/docker.sock:/var/run/docker.sock \\
+                                aquasec/trivy:latest image \\
+                                --severity CRITICAL,HIGH \\
+                                --exit-code 1 \\
+                                --ignore-unfixed %fullImageName%
+                        """
                 }
             }
         }
+        
 
         // ETAPA 6: PUBLICACIÓN EN DOCKERHUB (CD)
         stage('Push to DockerHub') {
