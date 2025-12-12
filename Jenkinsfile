@@ -55,7 +55,7 @@ pipeline {
             
             steps {
                 // 2. Cargamos el Token (Asegúrate que el ID sea correcto)
-                withCredentials([string(credentialsId: 'sonar-auth-token-id', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: SONAR_AUTH_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     
                     // 3. Ejecutamos Docker en UNA SOLA LÍNEA.
                     // Es la forma más segura para evitar errores de sintaxis en Windows CMD.
