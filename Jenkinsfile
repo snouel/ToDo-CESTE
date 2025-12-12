@@ -16,7 +16,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'docker-hub-credentials'
         DOCKERHUB_REPO = 'devsnouel/todo-ceste'
-        SONAR_AUTH_TOKEN_ID = 'sonar-auth-token-id' 
+        SONAR_AUTH_TOKEN_ID = 'sonar-auth-token' 
         SONAR_PROJECT_KEY = 'todo-ceste'
     }
 
