@@ -19,20 +19,20 @@ def check_syntax():
                 try:
                     # Intenta compilar el archivo. Si hay un error de sintaxis, falla aquí.
                     py_compile.compile(filepath, doraise=True)
-                    # print(f"✅ {filepath}: OK")
+                    # print(f" {filepath}: OK")
                 except py_compile.PyCompileError as e:
-                    print(f"\n❌ FATAL SYNTAX ERROR in {filepath}")
+                    print(f"\n FATAL SYNTAX ERROR in {filepath}")
                     print(e)
                     success = False
                 except Exception as e:
-                    print(f"❌ Unhandled Error in {filepath}: {e}")
+                    print(f" Unhandled Error in {filepath}: {e}")
                     success = False
 
     if not success:
-        print("\n❌ SYNTAX CHECK FAILED: One or more files have fatal syntax errors.")
+        print("\n SYNTAX CHECK FAILED: One or more files have fatal syntax errors.")
         sys.exit(1)
     
-    print("✅ All Python source files passed native syntax check.")
+    print(" All Python source files passed native syntax check.")
 
 if __name__ == "__main__":
     check_syntax()
