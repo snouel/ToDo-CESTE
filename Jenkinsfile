@@ -50,7 +50,7 @@ pipeline {
             environment {
                 // NOTA: En Docker para Windows, usa 'host.docker.internal' en lugar de 'localhost'
                 // para que el contenedor pueda ver tu servidor SonarQube local.
-                SONAR_HOST_URL = 'http://localhost:9000/'
+                SONAR_HOST_URL = 'http://host.docker.internal:9000'
             }
             
             steps {
