@@ -143,15 +143,16 @@ pipeline {
     post {
             // 1. ALWAYS: Se ejecuta SIEMPRE (pase lo que pase)
             always {
-                
-                if (isDockerHubLoggedOn){
+                script {
+                    if (isDockerHubLoggedOn){
                     echo '--- Cerrando sesión de DockerHub (Logout) ---'                    
                     bat "docker logout"
-
-                }else {
+                    }else {
                     echo '--- No se requiere Logout (No se hizo Push) ---'
-                }
+                    }
 
+                }
+                
                 echo '--- Limpiando Docker y Cerrando Sesión ---'
                 // Borra imágenes huerfanas (<none>)
                 bat "docker system prune -f"
