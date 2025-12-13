@@ -71,29 +71,23 @@ pipeline {
             }
         }
 
-         // ETAPA 5: ANÁLISIS DE VULNERABILIDADES (TRIVY)
+        // ETAPA 5: ESCANEO DE SEGURIDAD (TRIVY)
         stage('Image Security Scan (Trivy)') {
-                when { expression { return params.PARAM_BUILD_IMAGE } } // Solo si se construyó la imagen
-                // ... dentro de la etapa 'Image Security Scan (Trivy)'
-
-                steps {
-                    script {
-                        def dockerImageTag = params.PARAM_DOCKER_VERSION
-                        def fullImageName = "${DOCKERHUB_REPO}:${dockerImageTag}"
+            steps {
+                script {
+                    def dockerImageTag = params.PARAM_DOCKER_VERSION
+                    def fullImageName = "${DOCKERHUB_REPO}:${dockerImageTag}"
+                    
+                    // Establecemos la variable de entorno para que CMD la pueda leer
+                    withEnv(["FULL_IMAGE_NAME=${fullImageName}"]) {
                         
-                        // Comando CORREGIDO: Uso de comillas triples (""") y eliminación del ^
-                        bat """
-                            docker run --rm \\
-                                -v //var/run/docker.sock:/var/run/docker.sock \\
-                                aquasec/trivy:latest image \\
-                                --severity CRITICAL,HIGH \\
-                                --exit-code 1 \\
-                                --ignore-unfixed %fullImageName%
-                        """
+                        // COMANDO EN UNA SOLA LÍNEA (Sin ^, sin \, sin comillas triples)
+                        // Usamos %FULL_IMAGE_NAME% para que Windows CMD lea la variable
+                        bat 'docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed %FULL_IMAGE_NAME%'
+                    }
                 }
             }
-        }
-        
+}
 
         // ETAPA 6: PUBLICACIÓN EN DOCKERHUB (CD)
         stage('Push to DockerHub') {
