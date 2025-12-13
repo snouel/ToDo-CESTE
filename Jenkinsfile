@@ -117,16 +117,15 @@ pipeline {
 
                     def dockerImageTag = params.PARAM_DOCKER_VERSION
 
-                    withCredentials([usernamePassword(
-                        credentialsId: DOCKERHUB_CREDENTIALS_ID,
-                        passwordVariable: 'DOCKER_TOKEN', 
-                        usernameVariable: 'DOCKER_USERNAME' 
-                    )]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // IMPORTANTE:
+                        // 1. Usar comillas dobles "..."
+                        // 2. Usar %VARIABLE% (Sintaxis Windows)
+                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
                         
-                        powershell "echo $env:DOCKER_TOKEN | docker login -u $env:DOCKER_USERNAME --password-stdin"
-                        
-                        bat "docker push ${DOCKERHUB_REPO}:${dockerImageTag}"
-                        bat "docker push ${DOCKERHUB_REPO}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:${params.PARAM_DOCKER_VERSION}"
+                        bat "docker tag ${DOCKER_IMAGE}:${params.PARAM_DOCKER_VERSION} ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
 
                     isDockerHubLoggedOn = true
