@@ -57,7 +57,8 @@ pipeline {
                     
                     // AGREGADO: -Dsonar.exclusions=syntax_check.py,tasks.py
                     // Esto evita que SonarQube te penalice por no tener tests en estos scripts.
-                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. Dsonar.exclusions=syntax_check.py,**/.pytest_cache/**/*,**/__pycache__/**/*, -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
+                   // ETAPA SONARQUBE CORREGIDA
+                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. -Dsonar.exclusions=syntax_check.py,**/.pytest_cache/**/*,**/__pycache__/**/* -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
                 }
             }
         }
