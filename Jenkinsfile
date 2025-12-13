@@ -71,7 +71,7 @@ pipeline {
             }
         }
 
-        // ETAPA 6: ESCANEO DE SEGURIDAD (TRIVY)
+        // ETAPA 5: ESCANEO DE SEGURIDAD (TRIVY)
         stage('Image Security Scan (Trivy)') {
             steps {
                 script {
