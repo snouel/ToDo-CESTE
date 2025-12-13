@@ -72,22 +72,25 @@ pipeline {
         }
 
         // ETAPA 5: ESCANEO DE SEGURIDAD (TRIVY)
-        stage('Image Security Scan (Trivy)') {
+ // ETAPA 6: ESCANEO DE SEGURIDAD DE IMAGEN (TRIVY)
+        stage ('Image Security Scan (Trivy)') {
+            when { expression { return params.PARAM_BUILD_IMAGE } } 
             steps {
                 script {
                     def dockerImageTag = params.PARAM_DOCKER_VERSION
+                    // Asegúrate de que esta variable coincida con como la definiste antes (REPO:TAG)
                     def fullImageName = "${DOCKERHUB_REPO}:${dockerImageTag}"
                     
-                    // Establecemos la variable de entorno para que CMD la pueda leer
-                    withEnv(["FULL_IMAGE_NAME=${fullImageName}"]) {
-                        
-                        // COMANDO EN UNA SOLA LÍNEA (Sin ^, sin \, sin comillas triples)
-                        // Usamos %FULL_IMAGE_NAME% para que Windows CMD lea la variable
-                        bat 'docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed %FULL_IMAGE_NAME%'
-                    }
+                    echo "--- Scanning Image: ${fullImageName} ---"
+                    
+                    // CORRECCIÓN: Comando en UNA SOLA LÍNEA para evitar errores de sintaxis en Windows.
+                    // Usamos %fullImageName% si es una variable de entorno, o interpolación de Groovy ${fullImageName}
+                    // Aquí usaremos la interpolación directa de Groovy que es más segura dentro de comillas dobles.
+                    bat "docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed ${fullImageName}"
                 }
             }
-}
+        }
+
 
         // ETAPA 6: PUBLICACIÓN EN DOCKERHUB (CD)
         stage('Push to DockerHub') {
