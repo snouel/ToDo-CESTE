@@ -1,3 +1,5 @@
+def isDockerHubLoggedOn = false
+
 pipeline {
 
     agent any
@@ -55,7 +57,7 @@ pipeline {
                     
                     // AGREGADO: -Dsonar.exclusions=syntax_check.py,tasks.py
                     // Esto evita que SonarQube te penalice por no tener tests en estos scripts.
-                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. -Dsonar.exclusions=syntax_check.py, -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
+                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. Dsonar.exclusions=syntax_check.py,**/.pytest_cache/**/*,**/__pycache__/**/*, -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
                 }
             }
         }
@@ -96,6 +98,7 @@ pipeline {
             when { expression { return params.PARAM_PUSH_IMAGE && params.PARAM_BUILD_IMAGE } } 
             steps {
                 script {
+
                     def dockerImageTag = params.PARAM_DOCKER_VERSION
 
                     withCredentials([usernamePassword(
@@ -109,6 +112,9 @@ pipeline {
                         bat "docker push ${DOCKERHUB_REPO}:${dockerImageTag}"
                         bat "docker push ${DOCKERHUB_REPO}:latest"
                     }
+
+                    isDockerHubLoggedOn = true
+
                 }
             }
         }
@@ -137,11 +143,19 @@ pipeline {
     post {
             // 1. ALWAYS: Se ejecuta SIEMPRE (pase lo que pase)
             always {
+                
+                if (isDockerHubLoggedOn){
+                    echo '--- Cerrando sesión de DockerHub (Logout) ---'                    
+                    bat "docker logout"
+
+                }else {
+                    echo '--- No se requiere Logout (No se hizo Push) ---'
+                }
+
                 echo '--- Limpiando Docker y Cerrando Sesión ---'
                 // Borra imágenes huerfanas (<none>)
                 bat "docker system prune -f"
                 // Cierra sesión en DockerHub por seguridad
-                bat "docker logout"
             }
 
             // 2. SUCCESS: Solo si todo salió VERDE
