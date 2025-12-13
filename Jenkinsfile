@@ -115,6 +115,7 @@ pipeline {
 
         // ETAPA 7: DESPLIEGUE LOCAL (Deploy)
         stage ('Deploy to Local Docker') {
+            when { expression {params.PARAM_BUILD_IMAGE } }
             steps {
                 script {
                     def dockerImageTag = params.PARAM_DOCKER_VERSION
@@ -127,8 +128,35 @@ pipeline {
                     
                     // 2. Correr el nuevo contenedor mapeando el puerto 8000
                     echo "--- Deploying Container: ${fullImageName} ---"
-                    bat "docker run -d -p 8000:80 --name todo-fastapi ${fullImageName}"
+                    bat "docker run -d -p 8000:8000 --name todo-fastapi ${fullImageName}"
                 }
+            }
+        }
+
+        post {
+            // 1. ALWAYS: Se ejecuta SIEMPRE (pase lo que pase)
+            always {
+                echo '--- Limpiando Docker y Cerrando Sesión ---'
+                // Borra imágenes huerfanas (<none>)
+                bat "docker system prune -f"
+                // Cierra sesión en DockerHub por seguridad
+                bat "docker logout"
+            }
+
+            // 2. SUCCESS: Solo si todo salió VERDE
+            success {
+                echo '¡El despliegue fue exitoso! La API está online.'
+            }
+
+            // 3. FAILURE: Solo si algo FALLÓ (Rojo)
+            failure {
+                echo 'Algo salió mal. Revisar los logs.'
+            }
+
+            // 4. CLEANUP: Se ejecuta al final de todo
+            cleanup {
+                echo '--- Borrando archivos del Workspace ---'
+                cleanWs()
             }
         }
     }
