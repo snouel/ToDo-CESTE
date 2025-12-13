@@ -55,10 +55,25 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: SONAR_AUTH_TOKEN_ID, variable: 'SONAR_TOKEN')]) {
                     
-                    // AGREGADO: -Dsonar.exclusions=syntax_check.py,tasks.py
-                    // Esto evita que SonarQube te penalice por no tener tests en estos scripts.
-                   // ETAPA SONARQUBE CORREGIDA
-                    bat 'docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest -Dsonar.projectKey=todo-ceste -Dsonar.sources=. -Dsonar.exclusions=syntax_check.py,**/.pytest_cache/**/*,**/__pycache__/**/* -Dsonar.login=%SONAR_TOKEN% -Dsonar.host.url=%SONAR_HOST_URL% -Dsonar.qualitygate.wait=true'
+                    echo "--- Cleaning Caches & Running SonarQube ---"
+                    
+                    // 1. LIMPIEZA PREVIA: Borramos las carpetas que bloquean por permisos.
+                    // Usamos 'if exist' para que no falle si la carpeta no existe.
+                    bat "if exist .pytest_cache rd /s /q .pytest_cache"
+                    bat "if exist __pycache__ rd /s /q __pycache__"
+                    
+                    // 2. EJECUCIÓN DEL ESCÁNER
+                    // Nota: Ya no es estrictamente necesario excluirlas en el comando si las borramos,
+                    // pero dejamos la exclusión por seguridad.
+                    bat """
+                        docker run --rm -v "%CD%":/usr/src sonarsource/sonar-scanner-cli:latest ^
+                        -Dsonar.projectKey=todo-ceste ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.exclusions=syntax_check.py,tasks.py,**/.pytest_cache/**/*,**/__pycache__/**/* ^
+                        -Dsonar.login=%SONAR_TOKEN% ^
+                        -Dsonar.host.url=%SONAR_HOST_URL% ^
+                        -Dsonar.qualitygate.wait=true
+                    """
                 }
             }
         }
