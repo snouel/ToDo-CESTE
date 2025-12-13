@@ -132,8 +132,9 @@ pipeline {
                 }
             }
         }
+    }
 
-        post {
+    post {
             // 1. ALWAYS: Se ejecuta SIEMPRE (pase lo que pase)
             always {
                 echo '--- Limpiando Docker y Cerrando Sesión ---'
@@ -159,5 +160,4 @@ pipeline {
                 cleanWs()
             }
         }
-    }
 }
