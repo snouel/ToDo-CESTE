@@ -1,5 +1,5 @@
 # Usa una imagen base de Python ligera (Slim) para reducir el tamaño
-FROM python:3.11-slim-buster
+FROM python:3.11-slim-bookworm
 
 # Establecer variables de entorno
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -7,6 +7,12 @@ ENV PYTHONUNBUFFERED=1
 
 # Crear y establecer el directorio de trabajo
 WORKDIR /app
+
+# Actualizamos paquetes del sistema (buena práctica de seguridad)
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
+# Actualiza pip y setuptools a la última versión segura
+RUN pip install --upgrade pip setuptools wheel
 
 # Copiar el archivo de dependencias y optimizar la instalación
 COPY requirements.txt /tmp/
