@@ -72,7 +72,6 @@ pipeline {
         }
 
         // ETAPA 5: ESCANEO DE SEGURIDAD (TRIVY)
- // ETAPA 6: ESCANEO DE SEGURIDAD DE IMAGEN (TRIVY)
         stage ('Image Security Scan (Trivy)') {
             when { expression { return params.PARAM_BUILD_IMAGE } } 
             steps {
@@ -110,6 +109,25 @@ pipeline {
                         bat "docker push ${DOCKERHUB_REPO}:${dockerImageTag}"
                         bat "docker push ${DOCKERHUB_REPO}:latest"
                     }
+                }
+            }
+        }
+
+        // ETAPA 7: DESPLIEGUE LOCAL (Deploy)
+        stage ('Deploy to Local Docker') {
+            steps {
+                script {
+                    def dockerImageTag = params.PARAM_DOCKER_VERSION
+                    def fullImageName = "${DOCKERHUB_REPO}:${dockerImageTag}"
+                    
+                    // 1. Detener y borrar el contenedor anterior (si existe) para evitar conflictos de nombre/puerto
+                    // Usamos try/catch o ignoramos errores por si es la primera vez y no existe.
+                    bat "docker stop todo-fastapi || exit 0"
+                    bat "docker rm todo-fastapi || exit 0"
+                    
+                    // 2. Correr el nuevo contenedor mapeando el puerto 8000
+                    echo "--- Deploying Container: ${fullImageName} ---"
+                    bat "docker run -d -p 8000:80 --name todo-fastapi ${fullImageName}"
                 }
             }
         }
