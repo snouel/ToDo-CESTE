@@ -1,3 +1,5 @@
+//Jekinsfile v1
+
 def isDockerHubLoggedOn = false
 
 pipeline {
