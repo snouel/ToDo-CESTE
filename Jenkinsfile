@@ -117,7 +117,7 @@ pipeline {
 
                     def dockerImageTag = params.PARAM_DOCKER_VERSION
 
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         // IMPORTANTE:
                         // 1. Usar comillas dobles "..."
                         // 2. Usar %VARIABLE% (Sintaxis Windows)
