@@ -121,9 +121,9 @@ pipeline {
                         
                         bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
                         
-                        bat "docker push ${DOCKER_IMAGE}:${params.PARAM_DOCKER_VERSION}"
-                        bat "docker tag ${DOCKER_IMAGE}:${params.PARAM_DOCKER_VERSION} ${DOCKER_IMAGE}:latest"
-                        bat "docker push ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKERHUB_REPO}:${params.PARAM_DOCKER_VERSION}"
+                        bat "docker tag ${DOCKERHUB_REPO}:${params.PARAM_DOCKER_VERSION} ${DOCKERHUB_REPO}:latest"
+                        bat "docker push ${DOCKERHUB_REPO}:latest"
                     }
 
                     isDockerHubLoggedOn = true
