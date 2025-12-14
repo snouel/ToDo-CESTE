@@ -1,4 +1,4 @@
-//Jekinsfile v1
+//-- Jekinsfile v1 --
 
 def isDockerHubLoggedOn = false
 
